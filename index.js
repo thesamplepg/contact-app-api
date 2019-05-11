@@ -19,6 +19,12 @@ app.use(logger);
 
 app.use('/', require('./routes'));
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'To start, just send request to /start'
+    });
+});
+
 dbConnect()
     .then(res => {
         console.log(res);
