@@ -19,7 +19,7 @@ router.get('/start', (req, res) => {
         new App().save()
             .then(app => {
 
-                res.cookie('contact_app', app._id);
+                res.cookie('contact_app', app._id, { domain: '.herokuapp.com', path: '/start'});
 
                 res.status(200).json({
                     endpoint: app._id
