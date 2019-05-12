@@ -12,6 +12,8 @@ const validatorConfig = {
 
 router.get('/start', (req, res) => {
 
+    console.log(req.cookies.contact_app);
+
     if(!req.cookies.contact_app) {
         
         new App().save()
