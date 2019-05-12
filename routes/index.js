@@ -17,7 +17,7 @@ router.get('/start', (req, res) => {
         new App().save()
             .then(app => {
 
-                res.cookies.contact_app = 'true';
+                res.cookie('contact_app', app._id);
 
                 res.status(200).json({
                     endpoint: app._id
@@ -31,7 +31,7 @@ router.get('/start', (req, res) => {
     } else {
         
         res.status(400).json({
-            message: 'You have already created'
+            endpoint: req.cookies.contact_app
         });
 
     }
@@ -44,7 +44,7 @@ router.get('/:endpoint', async(req, res) => {
 
     if(ObjectId.isValid(id)) {
 
-        const contacts = await Contact.find({_id: id});
+        const contacts = await Contact.find({app: ObjectId(id)});
 
         res.status(200).json({
             contacts
@@ -85,7 +85,7 @@ router.post('/:endpoint', async(req, res) => {
 
         } else {
             res.status(400).json({
-                error: `${result.failed} must be more than ${validatorConfig[result.failed]}`
+                error: result.error
             });
         }
     } else {
@@ -117,7 +117,7 @@ router.put('/:endpoint', async(req, res) => {
             }
         } else {
             res.status(400).json({
-                error: `${result.failed} must be more than ${validatorConfig[result.failed]}`
+                error: result.error
             });
         }
     } else {
