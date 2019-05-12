@@ -12,7 +12,7 @@ const validatorConfig = {
 
 router.get('/start', (req, res) => {
 
-    console.log(req.cookies.contact_app);
+    console.log(req.cookies);
 
     if(!req.cookies.contact_app) {
         
