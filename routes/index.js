@@ -16,26 +16,33 @@ router.post("/", multer.single("avatar"), async (req, res) => {
   console.log(req.file, req.body);
 
   if (req.file) {
-    try {
-      const result = await uploadImage(req.file.path);
+    uploadImage(req.file.path)
+      .then(result => {
+        req.body.image = {
+          url: result.secure_url,
+          id: result.public_id
+        };
 
-      req.body.image = {
-        url: result.secure_url,
-        id: result.public_id
-      };
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error: "Something went wrong" });
-    }
+        return new Contact(req.body).save();
+      })
+      .then(contact => {
+        res.status(200).json({
+          contact
+        });
 
-    fs.remove(req.file.path);
+        fs.remove(req.file.path);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: "Something went wrong" });
+      });
+  } else {
+    const contact = await new Contact(req.body).save();
+
+    res.status(200).json({
+      contact
+    });
   }
-
-  const contact = await new Contact(req.body).save();
-
-  res.status(200).json({
-    contact
-  });
 });
 
 router.put("/", async (req, res) => {
