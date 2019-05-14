@@ -12,6 +12,14 @@ const ContactSchema = new mongoose.Schema({
   address: {
     type: String,
     required: true
+  },
+  image: {
+    url: {
+      type: String
+    },
+    id: {
+      type: String
+    }
   }
 });
 

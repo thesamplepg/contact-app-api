@@ -15,6 +15,7 @@ app.set("view engine", "ejs");
 
 app.use(cors());
 app.use(bodyParse.json());
+app.use(bodyParse.urlencoded({ extended: true }));
 
 app.use(logger);
 

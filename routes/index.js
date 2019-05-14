@@ -1,13 +1,8 @@
 const router = require("express").Router();
 const { ObjectId } = require("mongodb");
 const Contact = require("../models/contact");
-const validator = require("../utilits/validator");
-
-const validatorConfig = {
-  name: 3,
-  phone: 10,
-  address: 6
-};
+const { multer, uploadImage, deleteImage } = require("../utilits/upload");
+const fs = require("fs-extra");
 
 router.get("/", async (req, res) => {
   const contacts = await Contact.find({});
@@ -17,7 +12,25 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.post("/", async (req, res) => {
+router.post("/", multer.single("avatar"), async (req, res) => {
+  console.log(req.file, req.body);
+
+  if (req.file) {
+    try {
+      const result = await uploadImage(req.file.path);
+
+      req.body.image = {
+        url: result.secure_url,
+        id: result.public_id
+      };
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+
+    fs.remove(req.file.path);
+  }
+
   const contact = await new Contact(req.body).save();
 
   res.status(200).json({
@@ -27,8 +40,8 @@ router.post("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (ObjectId.isValid(req.body._id)) {
-    const contact = await Contact.findByIdAndUpdate(
-      { _id: ObjectId(req.body.id) },
+    const contact = await Contact.findOneAndUpdate(
+      { _id: ObjectId(req.body._id) },
       {
         $set: { ...req.body }
       }
@@ -45,6 +58,12 @@ router.delete("/", async (req, res) => {
     const contact = await Contact.findByIdAndRemove({
       _id: ObjectId(req.body._id)
     });
+
+    if (contact.image) {
+      deleteImage(contact.image.id).catch(err => {
+        if (!err.deleted) console.log(err);
+      });
+    }
 
     res.status(200).json({ deletedContact: contact });
   } else {
