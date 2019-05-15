@@ -13,8 +13,6 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", multer.single("avatar"), async (req, res) => {
-  console.log(req.file, req.body);
-
   if (req.file) {
     uploadImage(req.file.path)
       .then(result => {
