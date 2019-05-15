@@ -45,10 +45,10 @@ router.post("/", multer.single("avatar"), async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (ObjectId.isValid(req.body._id)) {
-    const contact = await Contact.findOneAndUpdate(
+    const contact = await Contact.updateOne(
       { _id: ObjectId(req.body._id) },
       {
-        $set: { ...req.body }
+        $set: req.body
       }
     );
 

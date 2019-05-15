@@ -1,5 +1,13 @@
+const bodyParse = require("body-parser");
+const { logger } = require("./utilits/middleWares");
+const cors = require("cors");
+
 const { connect } = require("./utilits/database");
 const app = require("./app");
+
+app.set("view engine", "ejs");
+
+app.use(logger);
 
 connect()
   .then(res => {
